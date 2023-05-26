@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L5作業-2</title>
+
+    <style>
+        .book {
+            display: flex;
+            margin-bottom: 50px;
+            background-color: beige;
+        }
+
+        .img {
+            position: relative;
+            width: 300px;
+        }
+
+        .img img {
+            width: 100%;
+        }
+
+        .content {
+            width: calc(100% - 300px);
+            padding: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="books">
+    </div>
+    <script src="https://sagedaben.com/iSpan/bookJSON.js"></script>
+    <script>
+        const datas = JSON.parse(bookData_str);
+        const books = document.querySelector(".books");
+
+        //依照價格排序，用售價
+        datas.sort((a, b) => a.price[0] * a.price[1] - b.price[0] * b.price[1]);
+
+        datas.map(function (value, index) {
+            books.append(toDOM(toHTMLString(value)));
+        });
+
+
+        function toDOM(htmlString) {
+            const dom = document.createElement('div');
+            dom.innerHTML = htmlString;
+            return dom.children[0];
+        }
+
+        function toHTMLString(book = {}) {
+            const htmlString = `
+            <div class="book">
+                <div class="img">
+                    <img src="${book.cover}" alt="">
+                </div>
+                <div class="content">
+                    <h2>${book.title}</h2>
+                    <h3>${book.author}</h3>
+                    <h4>${book.date}</h4>
+                    <div class="desc">${book.desc}</div>
+                </div>
+            </div>
+            `;
+            return htmlString;
+        }
+    </script>
+
+</body>
+
+</html>

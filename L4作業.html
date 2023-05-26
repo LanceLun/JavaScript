@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作業</title>
+    <style>
+        html,
+        body,
+        section {
+            height: 100%;
+        }
+
+        body {
+            background-color: #dde2eb;
+        }
+
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        article {
+            min-width: 400px;
+            min-height: 100px;
+            background-color: #79aaf7;
+            border-radius: 5px;
+            display: block;
+            padding: 10px;
+            font-size: 24px;
+        }
+
+        table thead th:nth-child(1) {
+            width: 50px;
+        }
+
+        table thead th {
+            width: 100px;
+        }
+
+        table thead {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        table tbody tr:nth-child(odd) {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        table tbody th {
+            font-weight: normal;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .fullScore {
+            background-color: #FFFF37;
+        }
+
+        .failed {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <section>
+        <article>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>costA</th>
+                        <th>costB</th>
+                        <th>costC</th>
+                        <th>costD</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>1</th>
+                        <th>吳穎伯</th>
+                        <th>90</th>
+                        <th>80</th>
+                        <th>95</th>
+                        <th>90</th>
+                    </tr>
+                    <tr>
+                        <th>2</th>
+                        <th>王家佑</th>
+                        <th>95</th>
+                        <th>88</th>
+                        <th>58</th>
+                        <th>93</th>
+                    </tr>
+                    <tr>
+                        <th>3</th>
+                        <th>洪奕銘</th>
+                        <th>52</th>
+                        <th>65</th>
+                        <th>76</th>
+                        <th>45</th>
+                    </tr>
+                    <tr>
+                        <th>3</th>
+                        <th>許佳伶</th>
+                        <th>88</th>
+                        <th>76</th>
+                        <th>81</th>
+                        <th>60</th>
+                    </tr>
+                    <tr>
+                        <th>4</th>
+                        <th>王佩芸</th>
+                        <th>100</th>
+                        <th>100</th>
+                        <th>100</th>
+                        <th>100</th>
+                    </tr>
+                    <tr>
+                        <th>5</th>
+                        <th>林奎聖</th>
+                        <th>85</th>
+                        <th>80</th>
+                        <th>89</th>
+                        <th>90</th>
+                    </tr>
+                    <tr>
+                        <th>6</th>
+                        <th>張剛皓</th>
+                        <th>35</th>
+                        <th>28</th>
+                        <th>60</th>
+                        <th>67</th>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+    </section>
+    <script>
+        let trs = document.querySelectorAll("tr");
+        let AllScores = [];
+
+        //加入一欄位
+        let theadtr = document.querySelector("thead tr");
+        let theadth = document.createElement("th");
+        let theadth2 = document.createElement("th");
+        theadth.innerText = "Avg";
+        theadth2.innerText = "Rank"
+        theadtr.append(theadth);
+        theadtr.append(theadth2);
+
+
+        for (let row = 1; row < trs.length; row++) {
+            let tds = trs[row].querySelectorAll("th");
+            let user = [];
+            let allScores = [];
+            for (let col = 2; col < tds.length; col++) {
+                //取得分數加到陣列中
+                let score = parseInt(tds[col].innerText);
+                allScores.push(score);
+
+                //分數判斷
+                setColor(tds[col]);
+            }
+            //計算平均分數，並加到表格內
+            let avg = getAvg(allScores);
+            let thAvg = document.createElement("th");
+            thAvg.innerText = avg;
+            trs[row].append(thAvg);
+
+            //將分數總分存進陣列，加上所在行數當成索引
+            AllScores.push({ index: row, sum: getSum(allScores) });
+
+        }
+
+        //將總分由大到小排列
+        AllScores.sort((a, b) => b.sum - a.sum);
+        //跑迴圈，依照總分索引值把排名加入
+        for (let i = 0; i < AllScores.length; i++) {
+            let row = AllScores[i].index;
+            let thRank = document.createElement("th");
+            thRank.innerText = i + 1;
+            trs[row].append(thRank);
+        }
+        console.log(AllScores);
+
+        //取得陣列分數總合
+        function getSum(allscore = []) {
+            let sum = allscore.reduce((total, score) => total + score, 0);
+            return sum;
+        }
+
+        //計算陣列平均分數
+        function getAvg(allscore = []) {
+            let sum = allscore.reduce((total, score) => total + score, 0);
+            let avg = sum / (allscore.length);
+            return avg;
+        }
+
+        //依照分數判斷，加入不同class改變樣式
+        function setColor(td) {
+            if (parseInt(td.innerText) === 100) {
+                td.classList.add("fullScore");
+            };
+            if (parseInt(td.innerText) < 60) {
+                td.classList.add("failed")
+            }
+        };
+
+
+    </script>
+</body>
+
+</html>

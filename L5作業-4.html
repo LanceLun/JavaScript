@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L5作業-4</title>
+
+    <style>
+        .book {
+            display: flex;
+            margin-bottom: 50px;
+            background-color: beige;
+        }
+
+        .img {
+            position: relative;
+            width: 300px;
+        }
+
+        .img img {
+            width: 100%;
+        }
+
+        .content {
+            width: calc(100% - 300px);
+            padding: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="books">
+    </div>
+    <script src="https://sagedaben.com/iSpan/bookJSON.js"></script>
+    <script>
+
+        let datas = JSON.parse(bookData_str);
+        const books = document.querySelector(".books");
+
+
+        //將其他作品加入datas
+        datas.forEach(function (data) {
+            data.otherWork = getOtherWork(data.author, data._id);
+        });
+
+        console.log(datas);
+
+        datas.map(function (value, index) {
+            books.append(toDOM(toHTMLString(value)));
+        });
+
+        // 找出相同作者的其他作品
+        //第一層回傳相同作者且除了自己以外的書
+        //第二層將書名存成新的字串回傳
+        function getOtherWork(author, id) {
+            return datas.filter(function (data, index) {
+                return data.author === author && data._id !== id
+            }).map((data) => data.title).join(", ");
+        };
+
+        function toDOM(htmlString) {
+            const dom = document.createElement('div');
+            dom.innerHTML = htmlString;
+            return dom.children[0];
+        };
+
+
+
+        function toHTMLString(book = {}) {
+            const htmlString = `
+            <div class="book">
+                <div class="img">
+                    <img src="${book.cover}" alt="">
+                </div>
+                <div class="content">
+                    <h2>${book.title}</h2>
+                    <h3>${book.author}</h3>
+                    <h4>${book.date}</h4>
+                    <h4>${book.otherWork}</h4>
+                    <div class="desc">${book.desc}</div>
+                </div>
+            </div>
+            `;
+            return htmlString;
+        }
+    </script>
+
+</body>
+
+</html>
