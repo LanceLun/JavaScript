@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>main</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .box {
+            width: 80%;
+            margin: 2em auto;
+        }
+
+        .book {
+            display: flex;
+            margin-bottom: 50px;
+            background-color: beige;
+        }
+
+        .img {
+            position: relative;
+            width: 300px;
+        }
+
+        .img img {
+            width: 100%;
+        }
+
+        .content {
+            width: calc(100% - 300px);
+            padding: 10px;
+        }
+
+        ul {
+            margin-bottom: 15px;
+            width: 100%;
+            overflow: auto;
+            list-style-type: none;
+            background-color: plum;
+            border-radius: 20px;
+        }
+
+        ul li {
+            width: 7em;
+            line-height: 1.5em;
+            float: left;
+            text-align: center;
+        }
+
+        ul li:hover {
+            background-color: seagreen;
+            color: white;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="box">
+        <header class="header">
+            <nav>
+                <ul>
+                    <li id="title">書名排序</li>
+                    <li id="price">價錢排序</li>
+                    <li id="date">日期排序</li>
+                    <li id="otherWork">顯示作者作品</li>
+                </ul>
+            </nav>
+        </header>
+        <div class="books">
+        </div>
+    </div>
+    <script src="https://sagedaben.com/iSpan/bookJSON.js"></script>
+    <script>
+        const datas = JSON.parse(bookData_str);
+        const books = document.querySelector(".books");
+
+        datas.map(function (value, index) {
+            books.append(toDOM(toHTMLString(value)));
+        });
+
+        let title = document.querySelector("#title");//抓title排序的按鈕
+        //新增事件
+
+        title.addEventListener("click", function () {
+            datas.sort((a, b) => a._id - b._id);//因為會有不同排序，所以每次執行前要先依照id排過一次，排版才會好看
+
+            datas.sort((a, b) => a.title.localeCompare(b.title));//依照書名筆畫排序
+            books.innerHTML = "";//清空書的內容，不然會重複加入書籍
+
+            //重新加入排序後的書
+            datas.map(function (value, index) {
+                books.append(toDOM(toHTMLString(value)));
+            });
+
+            console.log(datas);
+        });
+
+        //抓price排序的按鈕
+        let price = document.querySelector("#price");
+        price.addEventListener("click", function () {
+            datas.sort((a, b) => a._id - b._id);//因為會有不同排序，所以每次執行前要先依照id排過一次，排版才會好看
+            datas.sort((a, b) => a.price[0] * a.price[1] - b.price[0] * b.price[1])
+
+            books.innerHTML = "";//清空書的內容，不然會重複加入書籍
+
+            //重新加入排序後的書
+            datas.map(function (value, index) {
+                books.append(toDOM(toHTMLString(value)));
+            });
+            console.log(datas);
+        })
+
+        //抓date排序的按鈕
+        let date = document.querySelector("#date");
+        date.addEventListener("click", function () {
+            datas.sort((a, b) => a._id - b._id);//因為會有不同排序，所以每次執行前要先依照id排過一次，排版才會好看
+            datas.sort((a, b) => {
+                let dateA = new Date(a.date);
+                let dateB = new Date(b.date);
+                return dateB - dateA;
+            });
+
+            books.innerHTML = "";//清空書的內容，不然會重複加入書籍
+
+            //重新加入排序後的書
+            datas.map(function (value, index) {
+                books.append(toDOM(toHTMLString(value)));
+            });
+            console.log(datas);
+        });
+
+        //抓otherWork排序的按鈕
+        let other = document.querySelector("#otherWork");
+        other.addEventListener("click", function () {
+            datas.map(function (book) {
+                book.otherWork = getOtherWork(book.author, book._id);
+            })//每本書都要檢查有沒有其他作品，並且新增一個屬性otherWork存放
+
+            books.innerHTML = "";//清空書的內容，不然會重複加入書籍
+
+            //重新加入含其他作品的書，注意加入的語法不同toHTMLStringAdd是特別且給增加作品顯示用的
+            datas.map(function (value, index) {
+                books.append(toDOM(toHTMLStringAdd(value)));
+            });
+            console.log(datas);
+        })
+
+
+        //輸入一本書+id
+        //filter會找出除了自己以外其他相同作者的書
+        //再由map回傳符合條件的書名
+        //join書名由陣列轉字串
+        function getOtherWork(author, id) {
+            return datas.filter(function (book) {
+                return book.author === author && book._id !== id
+            }).map((book) => book.title).join(", ");
+        }
+
+
+        //將HTML語法加入倒HTML中顯示出來
+        function toDOM(htmlString) {
+            const dom = document.createElement('div');
+            dom.innerHTML = htmlString;
+            return dom.children[0];
+        }
+
+        //將物件轉成HTML語法
+        function toHTMLString(book = {}) {
+            const htmlString = `
+            <div class="book">
+                <div class="img">
+                    <img src="${book.cover}" alt="">
+                </div>
+                <div class="content">
+                    <h2>${book.title}</h2>
+                    <h3>${book.author}</h3>
+                    <h4>${book.date}</h4>
+                    <div class="desc">${book.desc}</div>
+                </div>
+            </div>
+            `;
+            return htmlString;
+        }
+
+        //將物件轉成HTML語法
+        function toHTMLStringAdd(book = {}) {
+            const htmlString = `
+            <div class="book">
+                <div class="img">
+                    <img src="${book.cover}" alt="">
+                </div>
+                <div class="content">
+                    <h2>${book.title}</h2>
+                    <h3>${book.author}</h3>
+                    <h4>${book.date}</h4>
+                    <h4>${book.otherWork}</h4>
+                    <div class="desc">${book.desc}</div>
+                </div>
+            </div>
+            `;
+            return htmlString;
+        }
+    </script>
+</body>
+
+</html>
