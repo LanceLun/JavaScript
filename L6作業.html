@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #F0F0F0;
+        }
+
+        .books {
+            padding: 1em;
+            width: 80%;
+            margin: auto;
+            overflow: auto;
+        }
+
+        .book {
+            width: 95%;
+            min-width: 500px;
+            display: flex;
+            align-items: center;
+            border: 2px solid black;
+            background-color: white;
+            border-radius: 20px;
+            margin-bottom: 32px;
+            overflow: auto;
+        }
+
+        .img {
+            margin-left: 16px;
+            width: 130px;
+            display: flex;
+        }
+
+        .img img {
+            margin: auto;
+            width: 80%;
+        }
+
+        .bigbook {
+            width: calc(80% + 200px);
+        }
+
+        .bigimg {
+            width: calc(20% + 100px);
+        }
+
+
+        .content {
+            width: calc(100% - 250px);
+            margin-left: 1em;
+            padding: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="books"></div>
+    <script src="https://sagedaben.com/iSpan/bookJSON.js"></script>
+    <script>
+        let bookData = JSON.parse(bookData_str);
+        let books = document.querySelector('.books');
+        display();
+
+        let book = document.querySelectorAll(".book");
+        let desc = document.querySelectorAll(".desc");
+        let img = document.querySelectorAll(".img");
+
+
+
+        for (let i = 0; i < book.length; i++) {
+            book[i].addEventListener("click", function () {
+                //把被放大的書抓出來沒有就是null
+                let bigBook = document.querySelector(".book.bigbook");
+
+                //觸發事件就先重製
+                for (let num = 0; num < book.length; num++) {
+                    addHide(desc[num]);
+                    removebig(book[num], img[num]);
+                }
+
+                //判斷現在點的書是不是自己，是的話中止，書會重製縮小
+                if (bigBook !== "null" && bigBook == book[i]) {
+                    return;
+                }
+
+                //如果點選的書，當前的說明被隱藏，就執行移除隱藏跟放大
+                if (isHide(desc[i])) {
+                    removeHide(desc[i]);
+                    addbig(book[i], img[i]);
+                }
+            })
+        }
+
+        function isHide(desc) {
+            return desc.classList.contains("hide");
+        }
+
+        function addbig(book, img) {
+            book.classList.add("bigbook");
+            img.classList.add("bigimg");
+        }
+
+        function removebig(book, img) {
+            book.classList.remove("bigbook");
+            img.classList.remove("bigimg");
+        }
+
+        function removeHide(desc) {
+            desc.classList.remove("hide");
+        }
+
+        function addHide(desc) {
+            desc.classList.add("hide");
+        }
+
+        function display() {
+            books.innerHTML = "";
+            for (let i = 0; i < bookData.length; i++) {
+                let dom = toDom(toHtmlString(bookData[i]));
+                books.append(dom);
+            }
+        }
+
+
+        function toHtmlString(book = {}) {
+            const htmlString = `
+                <div class="book">
+                <div class="img">
+                    <img  src="${book.cover}" alt="">
+                </div>
+                <div class="content">
+                    <h2>${book.title}</h2>
+                    <h3>${book.author}</h3>
+                    <div class="desc hide">${book.desc}</div>
+                </div>
+                </div>
+            `;
+            return htmlString;
+        }
+
+        function toDom(htmlString) {
+            const dom = document.createElement('div');
+            dom.innerHTML = htmlString;
+            return dom;
+        }
+    </script>
+</body>
+
+</html>

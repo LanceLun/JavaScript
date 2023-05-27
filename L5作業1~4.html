@@ -19,6 +19,7 @@
         }
 
         .book {
+            width: 100%;
             display: flex;
             margin-bottom: 50px;
             background-color: beige;
@@ -58,6 +59,18 @@
             background-color: seagreen;
             color: white;
             border-radius: 20px;
+        }
+
+        .price {
+            color: red;
+        }
+
+        h4 {
+            line-height: 1.5em;
+        }
+
+        .desc {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -180,7 +193,7 @@
                     <h2>${book.title}</h2>
                     <h3>${book.author}</h3>
                     <h4>${book.date}</h4>
-                    <h4>售價:${(book.price[0] * book.price[1] / 100).toFixed(0)}</h4>
+                    <h4>建議售價:${book.price[0]} , 折扣:${book.price[1]}折 , <span class="price">折扣後:${(book.price[0] * book.price[1] / 100).toFixed(0)}</span></h4>
                     <div class="desc">${book.desc}</div>
                 </div>
             </div>
@@ -199,8 +212,8 @@
                     <h2>${book.title}</h2>
                     <h3>${book.author}</h3>
                     <h4>${book.date}</h4>
-                    <h4>售價:${(book.price[0] * book.price[1] / 100).toFixed(0)}</h4>
-                    <h4>${book.otherWork}</h4>
+                    <h4>建議售價:${book.price[0]} , 折扣:${book.price[1]}折 , <span class="price">折扣後:${(book.price[0] * book.price[1] / 100).toFixed(0)}</span></h4>
+                    <h4>相關作品:${book.otherWork}</h4>
                     <div class="desc">${book.desc}</div>
                 </div>
             </div>
