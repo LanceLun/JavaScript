@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100%;
+            background-color: beige;
+        }
+
+        .main {
+            width: 80%;
+            padding: 1em;
+            margin: auto;
+            overflow: auto;
+        }
+
+        .area {
+            background-color: white;
+            width: 95%;
+            display: flex;
+            align-items: center;
+            border: 2px solid black;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            overflow: auto;
+        }
+
+        .img {
+            margin-left: 32px;
+            margin-right: 32px;
+            overflow: auto;
+            display: flex;
+            width: 250px;
+            min-width: 250px;
+        }
+
+        .img img {
+            margin: auto;
+            width: 100%;
+        }
+
+        .content {
+            padding: 16px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title {
+            line-height: 2em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+    </div>
+
+    <script>
+        let main = document.querySelector(".main");
+
+        (function () {
+            fetch('https://sagedaben.com/iSpan/api/spot.php')
+                .then(response => response.json())
+                .then(data => {
+                    const filteredData = data.XML_Head.Infos.Info.slice(200, 300).filter(item => item.Picture1 !== "");
+                    //console.log(filteredData);
+                    return filteredData;
+                })
+                .then(data => displayInfo(data))
+                .catch(error => alert("載入失敗"));
+        })();
+
+
+        function displayInfo(data) {
+            let htmlString = "";
+            for (let i = 0; i < data.length; i++) {
+
+                let template = `
+                    <div class="area" id = "${data[i].Id}">
+                        <div class="img">
+                            <img src="${data[i].Picture1}" alt="">
+                        </div>
+                        <div class="content">
+                            <h2 class="title">${data[i].Name}</h2>
+                            <h3 class="title">${data[i].Add}</h3>
+                            <div class="desc">${data[i].Description}</div>
+                        </div>
+                    </div >`;
+                htmlString += template;
+            };
+            main.innerHTML = htmlString;
+        };
+
+
+    </script>
+</body>
+
+</html>
